@@ -56,7 +56,7 @@ build() {
 	local readonly footer=$(cat $layout_dir/footer.html)
 
 	for file in $files; do
-		echo "${header}$(sh vendor/markdown.sh "$file")${footer}" > "$public_dir/index.html"
+		echo "${header}$(sh "$vendor_dir/markdown.sh" "$file")${footer}" > "$public_dir/index.html"
 	done
 }
 
