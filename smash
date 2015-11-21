@@ -22,11 +22,16 @@ sluggify() {
 }
 
 new_post() {
-	# TODO: Check if file exists
 	mkdir -p "$post_dir"
 
 	local readonly title="${@:1}"
 	local readonly file_name="$post_dir/$(date +%Y-%m-%d)-$(sluggify $title).md"
+
+	if [ -f "$file_name" ]; then
+		# TODO: Reslug title until it works
+		echo "A post with that title already exists!"
+		return 1
+	fi
 
 	cat > "$file_name" <<-EOF
 	---
