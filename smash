@@ -33,12 +33,7 @@ new_post() {
 		return 1
 	fi
 
-	cat > "$file_name" <<-EOF
-	---
-	title: $title
-	published: false
-	---
-	EOF
+	touch "$file_name"
 
 	echo "$file_name created!"
 }
