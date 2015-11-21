@@ -1,8 +1,6 @@
 #!/bin/bash
 
-readonly post_dir="posts"
-readonly public_dir="public"
-readonly layout_dir="layouts"
+source ./config.cfg
 
 readonly vendor_dir="vendor"
 readonly version="1.0.0"
