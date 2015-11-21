@@ -1,5 +1,4 @@
 #!/bin/bash
-# vim: noexpandtab
 
 readonly post_dir="posts"
 readonly public_dir="public"
