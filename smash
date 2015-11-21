@@ -44,7 +44,11 @@ new_post() {
 }
 
 build() {
-	# TODO: Check for vendor files
+	if [ ! -f "$vendor_dir/markdown.sh" ]; then
+		echo "Dependencies not installed, please run ./smash install"
+		return 1
+	fi
+
 	mkdir -p "$public_dir"
 
 	local readonly files="$post_dir/*"
