@@ -1,0 +1,90 @@
+#!/bin/bash
+# vim: noexpandtab
+
+readonly post_dir="posts"
+readonly public_dir="public"
+
+readonly vendor_dir="vendor"
+readonly version="1.0.0"
+
+print_help() {
+	cat <<-EOF
+	Smash $version By Nat Zimmermann
+	EOF
+}
+
+print_version() {
+	echo "$version"
+}
+
+# Replace non-alphanumeric characters with dashes
+# Replace uppercase characters with their lowercase counterparts
+sluggify() {
+	echo "${@:1}" | tr -c '[:alnum:]\n' '-' | tr '[:upper:]' '[:lower:]'
+}
+
+new_post() {
+	# TODO: Check if file exists
+	mkdir -p "$post_dir"
+
+	local readonly title="${@:1}"
+	local readonly file_name="$post_dir/$(date +%Y-%m-%d)-$(sluggify $title).md"
+
+	cat > "$file_name" <<-EOF
+	---
+	title: $title
+	published: false
+	---
+	EOF
+
+	echo "$file_name created!"
+}
+
+build() {
+	# TODO: Check for vendor files
+	mkdir -p "$public_dir"
+
+	local readonly files="$post_dir/*"
+
+	for file in $files; do
+		sh vendor/markdown.sh "$file" > "$public_dir/test.html"
+	done
+}
+
+install() {
+	echo "Creating directories"
+	local readonly directories_to_create=(
+		$post_dir
+		$public_dir
+	)
+
+	for directory in "${directories_to_create[@]}"; do
+		if [ ! -d "$directory" ]; then
+			mkdir -p "$directory"
+		fi
+	done
+
+	echo "Installing dependencies"
+	if [ ! -f "$vendor_dir/markdown.sh" ]; then
+		curl -o "$vendor_dir/markdown.sh" "https://raw.githubusercontent.com/chadbraunduin/markdown.bash/master/markdown.sh"
+	fi
+	echo "Installed!"
+}
+
+case "$1" in
+	install)
+		install
+		;;
+	build)
+		build
+		;;
+	new)
+		new_post "${@:2}"
+		;;
+	version)
+		print_version
+		;;
+	*)
+		print_help
+		;;
+esac
