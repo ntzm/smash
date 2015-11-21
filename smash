@@ -28,9 +28,12 @@ new_post() {
 	local readonly file_name="$post_dir/$(date +%Y-%m-%d)-$(sluggify $title).md"
 
 	if [ -f "$file_name" ]; then
-		# TODO: Reslug title until it works
-		echo "A post with that title already exists!"
-		return 1
+		local i=1
+		while [ -f "$file_name" ]; do
+			# Crappy solution but I'll fix it later
+			file_name="$post_dir/$(date +%Y-%m-%d)-$(sluggify $title)-$i.md"
+			i=$((i + 1))
+		done
 	fi
 
 	touch "$file_name"
