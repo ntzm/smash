@@ -15,10 +15,11 @@ print_version() {
 	echo "$version"
 }
 
-# Replace non-alphanumeric characters with dashes
+# Replace whitespace characters with dashes
+# Remove all other non-alphanumeric characters
 # Replace uppercase characters with their lowercase counterparts
 sluggify() {
-	echo "${@:1}" | tr -c '[:alnum:]\n' '-' | tr '[:upper:]' '[:lower:]'
+	echo "${@:1}" | sed 's/\s\{1,\}/-/g' | tr -cd '[:alnum:]-\n' | tr '[:upper:]' '[:lower:]'
 }
 
 new_post() {
