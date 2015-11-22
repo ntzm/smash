@@ -28,6 +28,14 @@ sluggify() {
 	echo "${@:1}" | sed 's/\s\{1,\}/-/g' | tr -cd '[:alnum:]-\n' | tr '[:upper:]' '[:lower:]'
 }
 
+get_header_value() {
+	cat "$1" | awk '/^---$/ { c++; next } c == 1' | grep "^$2: " | cut -d ' ' -f 2-
+}
+
+get_body() {
+	cat "$1" | awk '/^---$/ { c++; next } c >= 2'
+}
+
 new_post() {
 	mkdir -p "$post_dir"
 
@@ -41,7 +49,12 @@ new_post() {
 		i=$((i + 1))
 	done
 
-	touch "$file_name"
+	cat > "$file_name" <<-EOF
+	---
+	title: $title
+	layout: default
+	---
+	EOF
 
 	echo "$file_name created!"
 }
@@ -55,10 +68,22 @@ build() {
 	mkdir -p "$public_dir"
 
 	local readonly posts="$post_dir/*"
-	local readonly layout=$(cat "$layout_dir/default.html")
 
 	for post in $posts; do
-		echo ${layout//@content/$(sh "$vendor_dir/markdown.sh" "$post")} > "$public_dir/index.html"
+		local readonly layout_name=$(get_header_value "$post" "layout")
+		local readonly layout_file="$layout_dir/$layout_name.html"
+
+		if [ ! -f "$layout_file" ]; then
+			echo "Layout $layout_name not found in file $post"
+			continue
+		fi
+
+		local readonly layout=$(cat "$layout_file")
+		local readonly post_title=$(get_header_value "$post" "title")
+		local readonly public_file="$public_dir/$(sluggify $post_title).html"
+		local readonly post_body=$(get_body "$post")
+
+		echo ${layout//@content/$(echo "$post_body" | sh "$vendor_dir/markdown.sh")} > "$public_file"
 	done
 }
 
