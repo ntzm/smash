@@ -8,6 +8,12 @@ readonly version="1.0.0"
 print_help() {
 	cat <<-EOF
 	Smash $version By Nat Zimmermann
+
+	Usage:
+	install     - Install dependencies and create folders
+	new [title] - Create a new post
+	build       - Build posts into HTML
+	version     - Display the Smash version
 	EOF
 }
 
